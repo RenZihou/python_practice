@@ -9,5 +9,6 @@
 
 ## wlan_pwd
 
-获取PC上储存的无线网络密码  
-该程序会申请管理员权限以得到密码（[相关文档](https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shellexecutea)）
+获取PC上储存的无线网络密码，储存到指定的`csv`文件中  
+该程序会申请管理员权限以得到密码（[相关文档](https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shellexecutea)）  
+*仅适用于中文版 Windows*
