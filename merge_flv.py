@@ -21,7 +21,7 @@ def group_files() -> dict:
     """
     groups = {}
     ass_files = filter(lambda x: x[-3:] == 'ass', listdir('.'))
-    flv_files = list(filter(lambda x: x[-3:] == 'flv', listdir('.')))
+    flv_files = sorted(list(filter(lambda x: x[-3:] == 'flv', listdir('.'))))
     for ass_file in ass_files:
         title = ass_file[:-4]
         groups[title] = []
