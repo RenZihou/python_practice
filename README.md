@@ -21,5 +21,5 @@
 视频分组是根据弹幕文件（`.ass`）进行分组的，因此请确保下载了弹幕文件并放置于同一目录下  
 *需要安装`ffmpeg`并配置`PATH`*（无需安装相应的包）
 
-合并视频：`ffmpeg -f concat -i parts.txt -c copy out.flv`
+合并视频：`ffmpeg -f concat -i parts.txt -c copy out.flv`  
 转换格式：`ffmpeg -i in.flv -c copy -copyts out.mp4`
