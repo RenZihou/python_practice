@@ -13,7 +13,7 @@
 该程序会申请管理员权限以得到密码（[相关文档](https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shellexecutea)）  
 *仅适用于中文版 Windows*
 
-# merge_flv
+## merge_flv
 
 从b站上下载的番剧很多都是分段的，这样就没有办法在本地完整加载弹幕池  
 此程序用于合并这些分段视频  
@@ -23,3 +23,8 @@
 
 合并视频：`ffmpeg -f concat -i parts.txt -c copy out.flv`  
 转换格式：`ffmpeg -i in.flv -c copy -copyts out.mp4`
+
+## bigjpg
+
+调用 [Bigjpg](https://bigjpg.com/) 的`api`对图片进行放大  
+测试的时候好像并不支持p站的图床（`status`返回`error`）
