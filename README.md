@@ -27,4 +27,5 @@
 ## bigjpg
 
 调用 [Bigjpg](https://bigjpg.com/) 的`api`对图片进行放大  
-测试的时候好像并不支持p站的图床（`status`返回`error`）
+参数在源码里有说明，相应的官方文档中也有（需登录），就不抄了  
+对于本地图片和p站上的图片（图床域名`i.pximg.net`），需要先将图片托管到 [sm.ms](https://sm.ms/) 上，这个图床也提供了 [api](https://doc.sm.ms/)
