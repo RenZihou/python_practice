@@ -22,30 +22,9 @@ If the given formula is invalid, an exception will be raised
 from re import findall, sub
 
 
-class Statement(object):
-    def __init__(self, value):
-        self.value = bool(value)
-
-    def __invert__(self):  # ~
-        return Statement(not self.value)
-
-    def __and__(self, other):  # &
-        return Statement(self.value & other.value)
-
-    def __or__(self, other):  # |
-        return Statement(self.value | other.value)
-
-    def __xor__(self, other):  # ^
-        return Statement(self.value ^ other.value)
-
+class Statement(int):
     def __gt__(self, other):  # >
-        return Statement(not self.value or other.value)
-
-    def __eq__(self, other):  # =
-        return Statement(self.value == other.value)
-
-    def __str__(self):
-        return str(int(self.value))
+        return Statement(not self or other)
 
 
 class Formula(object):
