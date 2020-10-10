@@ -23,8 +23,23 @@ from re import findall, sub
 
 
 class Statement(int):
-    def __gt__(self, other):  # >
+    def __and__(self, other):
+        return Statement(int(self) & int(other))
+
+    def __or__(self, other):
+        return Statement(int(self) | int(other))
+
+    def __xor__(self, other):
+        return Statement(int(self) ^ int(other))
+
+    def __gt__(self, other):  # `>` means `implication` now
         return Statement(not self or other)
+
+    def __invert__(self):
+        return Statement(1 - self)
+
+    def __eq__(self, other):
+        return Statement(not (self - other))
 
 
 class Formula(object):
@@ -45,7 +60,9 @@ class Formula(object):
             statements: dict = dict(
                 zip(variables, map(Statement, map(int, values)))
             )
-            formula: str = sub(r'([A-Z])', r'statements["\1"]', self.formula)
+            statements['0'] = Statement(0)
+            statements['1'] = Statement(1)
+            formula: str = sub(r'([A-Z01])', r'statements["\1"]', self.formula)
             # the values of statements will be stored in the dict `statements`
             result: Statement = eval(formula)
             print('%s  %s' % (values.replace('', ' ').strip(), result))
