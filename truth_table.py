@@ -19,7 +19,7 @@ Guides:
 If the given formula is invalid, an exception will be raised
 """
 
-from re import findall, sub
+from re import findall
 
 
 class Statement(int):
@@ -62,9 +62,8 @@ class Formula(object):
             )
             statements['0'] = Statement(0)
             statements['1'] = Statement(1)
-            formula: str = sub(r'([A-Z01])', r'statements["\1"]', self.formula)
             # the values of statements will be stored in the dict `statements`
-            result: Statement = eval(formula)
+            result: Statement = eval(self.formula, statements)
             print('%s  %s' % (values.replace('', ' ').strip(), result))
         return
 
