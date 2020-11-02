@@ -112,5 +112,5 @@ def main(share_id: str, folder: list = None, file: bool = True) -> None:
 
 
 if __name__ == '__main__':
-    main('', folder=[''], file=True)
+    main(input('Share ID: '), folder=[''], file=True)
     pass
