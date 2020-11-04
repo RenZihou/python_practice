@@ -48,14 +48,17 @@ def get_dl_url(
     return dl_url
 
 
-def dl_single(file_url: str, filepath: str) -> None:
+def dl_single(file_url: str, filepath: str) -> bool:
     """
     download a single file
     :param file_url: file url
     :param filepath: relative file path
-    :return: None
+    :return: `True` for downloaded successfully, `False` for no-permission
     """
     r = requests.get(file_url, headers=headers, stream=True)
+    if r.status_code == 404:
+        print('Access Denied: %s' % filepath)
+        return False
     dir_path = findall(r'^(.*)/.*$', filepath)[0]  # path without filename
 
     if not path.exists(dir_path):
@@ -68,37 +71,43 @@ def dl_single(file_url: str, filepath: str) -> None:
             unit='Mb', unit_scale=4096 * 1e-6
         ):
             f.write(data)
-    return None
+    return True
 
 
-def dl_all(file_urls: list) -> None:
+def dl_all(file_urls: list) -> int:
     """
     download all files
     :param file_urls: files' url
-    :return: None
+    :return: total files downloaded
     """
+    count = 0
     for each in file_urls:
-        dl_single(*each)
-    return None
+        count += dl_single(*each)
+    print('%d files downloaded.' % count)
+    return count
 
 
-def main(share_id: str, folder: list = None, file: bool = True) -> None:
+def main(share_id: str, folder: list = None, file: bool = True) -> bool:
     """
     download files from Tsinghua cloud share-link
     :param share_id: share link id, a string make up of alphanumerical chars
     :param folder: folders (in the root folder) to download,
     `None` means all while `['']` means none
     :param file: whether download single files in the root folder
-    :return: None
+    :return: `False` for no-permission
     """
     dl_base_url = 'https://cloud.tsinghua.edu.cn/d/%s/files/?p=' % share_id
     base_url = 'https://cloud.tsinghua.edu.cn/api/v2.1/share-links' \
                '/%s/dirents/?path=' % share_id
     dl_suffix = '&dl=1'
 
+    r = requests.get(dl_base_url, headers=headers)
+    if r.status_code == 404:
+        print('Invalid Share-Id.')
+        return False
     title: str = findall(
         r'<meta property="og:title" content="(.*)" />',
-        requests.get(dl_base_url, headers=headers).text
+        r.text
     )[0]  # root folder name
     relative_dl_urls: list = get_dl_url(
         base_url, file_path='%2F', folder=folder, file=file
@@ -108,9 +117,9 @@ def main(share_id: str, folder: list = None, file: bool = True) -> None:
         relative_dl_urls
     ))  # url to download, parse `x` to handle chinese characters and signs
     dl_all(dl_urls)
-    return None
+    return True
 
 
 if __name__ == '__main__':
-    main(input('Share ID: '), folder=[''], file=True)
+    main(input('Share-Id: ').strip(), folder=None, file=True)
     pass
