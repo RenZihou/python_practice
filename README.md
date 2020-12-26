@@ -60,3 +60,9 @@
 将多媒体文件（包括但不限于`flv/wav/mp3`）转换为给定比特率的`mp3`（也可以是别的）
 
 之前一直用`Emisoft Media Converter`把从b站扒下来的pv转成音频拷到随身听里，结果今天那玩意突然用不了了......就整了这么个东西，ffmpeg yyds!
+
+## change_encoding
+
+批量改编码格式
+
+鼓捣`windows`的时候开启了个什么`utf-8`支持（还是`beta`版的），结果整的我电脑上文本文件编码全乱了qwq
