@@ -10,10 +10,11 @@ from os import makedirs, path
 from re import findall
 from math import ceil
 from urllib import parse
+
 from tqdm import tqdm
 
 
-def set_cookie(session, url, share_id, pwd):
+def set_cookie(session, url: str, share_id: str, pwd: str):
     """
     set cookies
     :param session: request session
@@ -60,12 +61,13 @@ def get_dl_url(session, base_url: str, file_path: str,
     return dl_url
 
 
-def dl_single(session, file_url: str, filepath: str) -> bool:
+def dl_single(session, file_url: str, filepath: str, cover: bool) -> bool:
     """
     download a single file
     :param session: request session
     :param file_url: file url
     :param filepath: relative file path
+    :param cover: whether cover existing files
     :return: `True` for downloaded successfully, `False` for no-permission
     """
     r = session.get(file_url, stream=True)
@@ -76,6 +78,9 @@ def dl_single(session, file_url: str, filepath: str) -> bool:
 
     if not path.exists(dir_path):
         makedirs(dir_path)
+    if not cover and path.exists(filepath):
+        print('[Warning] Skipped: %s' % filepath)
+        return True
     print('[Info] Downloading ./%s\n%s' % (filepath, file_url))
     with open(filepath, 'wb') as f:
         for data in tqdm(
@@ -87,22 +92,23 @@ def dl_single(session, file_url: str, filepath: str) -> bool:
     return True
 
 
-def dl_all(session, file_urls: list) -> int:
+def dl_all(session, file_urls: list, cover: bool) -> int:
     """
     download all files
     :param session: request session
     :param file_urls: files' url
+    :param cover: whether cover existing files
     :return: total files downloaded
     """
     count = 0
     for each in file_urls:
-        count += dl_single(session, *each)
-    print('%d files downloaded.' % count)
+        count += dl_single(session, *each, cover=cover)
+    print('[Notice] %d files downloaded.' % count)
     return count
 
 
 def main(share_id: str, pwd: str = None,
-         folder: list = None, file: bool = True) -> bool:
+         folder: list = None, file: bool = True, cover: bool = False) -> bool:
     """
     download files from Tsinghua cloud share-link
     :param share_id: share link id, a string make up of alphanumerical chars
@@ -111,6 +117,7 @@ def main(share_id: str, pwd: str = None,
     :param folder: folders (in the root folder) to download,
     `None` means all while `['']` means none
     :param file: whether download single files in the root folder
+    :param cover: whether cover existing files
     :return: `False` for no-permission
     """
     po_base_url = 'https://cloud.tsinghua.edu.cn/d/%s/' % share_id
@@ -136,6 +143,7 @@ def main(share_id: str, pwd: str = None,
         r = session.get(dl_base_url)
         title: str = findall(r'<meta property="og:title" content="(.*)" />',
                              r.text)[0]  # root folder name
+        # TODO: `findall` will raise another IndexError if pwd is incorrect
     else:
         pass
 
@@ -147,10 +155,10 @@ def main(share_id: str, pwd: str = None,
         lambda x: [dl_base_url + parse.quote(x) + dl_suffix, title + x],
         relative_dl_urls
     ))  # url to download, parse `x` to handle chinese characters and signs
-    dl_all(session, dl_urls)
+    dl_all(session, dl_urls, cover)
     return True
 
 
 if __name__ == '__main__':
-    main('SHARE_ID_HERE', pwd=None, folder=[], file=True)
+    main('SHARE-ID-HERE', pwd=None, folder=[], file=True, cover=False)
     pass
