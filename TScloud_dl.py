@@ -5,13 +5,15 @@
 Download files from Tsinghua Cloud share-link with a single click
 """
 
-import requests
 from os import makedirs, path
 from re import findall
 from math import ceil
 from urllib import parse
 
+import requests
 from tqdm import tqdm
+
+abs_dir = findall(r'^(.*\\).*$', path.abspath(__file__))[0]
 
 
 def set_cookie(session, url: str, share_id: str, pwd: str):
@@ -70,19 +72,20 @@ def dl_single(session, file_url: str, filepath: str, cover: bool) -> bool:
     :param cover: whether cover existing files
     :return: `True` for downloaded successfully, `False` for no-permission
     """
+    abs_filepath = abs_dir + filepath
     r = session.get(file_url, stream=True)
     if r.status_code == 404:  # no download permission
         print('[Fatal] Access Denied: %s' % filepath)
         return False
-    dir_path = findall(r'^(.*)/.*$', filepath)[0]  # path without filename
+    dir_path = findall(r'^(.*)/.*$', abs_filepath)[0]  # path without filename
 
     if not path.exists(dir_path):
         makedirs(dir_path)
-    if not cover and path.exists(filepath):
-        print('[Warning] Skipped: %s' % filepath)
-        return True
+    if not cover and path.exists(abs_filepath):
+        print('[Warning] Skipped (existing): %s' % filepath)
+        return False
     print('[Info] Downloading ./%s\n%s' % (filepath, file_url))
-    with open(filepath, 'wb') as f:
+    with open(abs_filepath, 'wb') as f:
         for data in tqdm(
                 r.iter_content(chunk_size=4096),
                 total=ceil(int(r.headers['Content-Length']) / 4096),
@@ -129,6 +132,7 @@ def main(share_id: str, pwd: str = None,
     session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; '
                                           'Trident/7.0; rv:11.0) like Gecko'})
 
+    print('[Info] Building connection...')
     r = session.get(dl_base_url)
     if r.status_code == 404:  # invalid share-id
         print('[Fatal] Invalid Share-Id.')
