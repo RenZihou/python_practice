@@ -13,7 +13,7 @@ from urllib import parse
 import requests
 from tqdm import tqdm
 
-abs_dir = findall(r'^(.*\\).*$', path.abspath(__file__))[0]
+abs_dir = path.dirname(__file__)
 
 
 def set_cookie(session, url: str, share_id: str, pwd: str):
