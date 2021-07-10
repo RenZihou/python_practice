@@ -48,7 +48,7 @@ def get_dl_url(session, base_url: str, file_path: str,
     folder = [] if folder is None else folder
     dl_url = []
     print('[Info] Fetching files from .%s' % file_path)
-    js = session.get(url=base_url + file_path).json()
+    js = session.get(url=base_url + parse.quote(file_path)).json()
     items: list = js['dirent_list']  # folders and files in current dictionary
 
     for each in items:
@@ -153,7 +153,7 @@ def main(share_id: str, pwd: str = None,
 
     relative_dl_urls: list = get_dl_url(
         session,
-        base_url, file_path='%2F', folder=folder, file=file,
+        base_url, file_path='/', folder=folder, file=file,
     )  # relative path to download
     dl_urls: list = list(map(
         lambda x: [dl_base_url + parse.quote(x) + dl_suffix, title + x],
